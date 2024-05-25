@@ -91,7 +91,7 @@ if (isset($_POST['login'])) {
             exit();
         }
     } else {
-        $error_message = $sql . "<br>" . "Eroare: " . mysqli_error($conn) . "<br> Utilizator sau parola incorecte!";
+        $error_message = "Nume de utilizator sau parolă incorectă!";
     }
 }
 
