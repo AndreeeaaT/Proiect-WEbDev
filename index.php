@@ -5,10 +5,18 @@ session_start();
 // Include functiile
 include "functions.php";
 
+
+echo "Username: " . (isset($_COOKIE['username']) ? $_COOKIE['username'] : 'Not set') . "<br>";
+echo "User Type: " . (isset($_COOKIE['user_type']) ? $_COOKIE['user_type'] : 'Not set') . "<br>";
+echo "Password is set: " . (isset($_COOKIE['password']) ? 'true' : 'false') . "<br>";
+echo "Session username is set: " . (isset($_SESSION['username']) ? isset($_SESSION['username']) : 'false') . "<br>";
+
 if (isset($_COOKIE['username']) && isset($_COOKIE['user_type']) && isset($_COOKIE['password']) && !isset($_SESSION['username'])) {
     $_SESSION['username'] = $_COOKIE['username'];
     $_SESSION['user_type'] = $_COOKIE['user_type'];
-    
+}
+
+if (isset($_SESSION['username'])) {
     $username = $_COOKIE['username'];
     $password = $_COOKIE['password'];
     $user_type = $_COOKIE['user_type'];
