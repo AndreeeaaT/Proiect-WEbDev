@@ -24,9 +24,6 @@ function encrypt_decrypt($action, $string) {
 
 // Verificare cookie-uri si setare sesiune daca utilizatorul nu este deja autentificat
 if (isset($_COOKIE['username']) && isset($_COOKIE['user_type']) && isset($_COOKIE['password']) && !isset($_SESSION['username'])) {
-    $_SESSION['username'] = $_COOKIE['username'];
-    $_SESSION['user_type'] = $_COOKIE['user_type'];
-    
     $username = $_COOKIE['username'];
     $password = $_COOKIE['password'];
     $user_type = $_COOKIE['user_type'];
@@ -36,6 +33,9 @@ if (isset($_COOKIE['username']) && isset($_COOKIE['user_type']) && isset($_COOKI
     $count = mysqli_num_rows($result);
 
     if ($count == 1) {
+        $_SESSION['username'] = $username;
+        $_SESSION['user_type'] = $user_type;
+
         if ($_SESSION['user_type'] == 'administrator') {
             header("Location: admin_page.php");
             exit();
@@ -56,7 +56,7 @@ $error_message = "";
 
 if (isset($_POST['login'])) {
     $username = $_POST['uname'];
-    $password = $_POST['password'];
+    $password = encrypt_decrypt('encrypt', $_POST['password']); // Encrypt password
     $user_type = $_POST['user_type'];
 
     $sql = "SELECT * FROM utilizatori WHERE user_name='$username' AND parola='$password' AND tip_utilizator='$user_type'";
@@ -68,10 +68,8 @@ if (isset($_POST['login'])) {
         $_SESSION['user_type'] = $user_type;
 
         if (!empty($_POST['remember'])) {
-            $encrypted_password = encrypt_decrypt('encrypt', $password);
-
             setcookie('username', $username, time() + (86400 * 30), "/");
-            setcookie('password', $encrypted_password, time() + (86400 * 30), "/");
+            setcookie('password', $password, time() + (86400 * 30), "/");
             setcookie('user_type', $user_type, time() + (86400 * 30), "/");
         } else {
             setcookie('username', '', time() - 3600, "/");
@@ -93,7 +91,7 @@ if (isset($_POST['login'])) {
             exit();
         }
     } else {
-        $error_message = "Nume de utilizator sau parolă incorectă!";
+        $error_message = $sql . "<br>" . "Eroare: " . mysqli_error($conn) . "<br> Utilizator sau parola incorecte!";
     }
 }
 
